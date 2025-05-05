@@ -9,15 +9,15 @@
 
 * **`AI_Agent/`** ：项目主目录，包含以下关键文件和子目录：
 * **`logs/`** ：日志文件夹，记录不同任务的交互过程和结果，包括与用户的对话、操作步骤、提取的信息等。每个任务的日志以 `conversation_*.txt` 格式存储。
-* **`css/`：**Streamlit中使用到的页面样式。
-* **`screenshots/`：**browser-use的运行流程gif。
-* **`sqlStruct/`：**mysql数据库中的表结构，可以直接通过查询命令添加相关表。
-* **main.py：**程序入口。
+* **`css/`**：Streamlit中使用到的页面样式。
+* **`screenshots/`**：browser-use的运行流程gif。
+* **`sqlStruct/`**：mysql数据库中的表结构，可以直接通过查询命令添加相关表。
+* **main.py**：程序入口。
 * **log_handler.py** ：负责日志管理，提供日志管理上下文管理器，可在 Streamlit 应用中临时添加和移除日志处理器。
 * **deepseek_api.py** ：用于评估对话是否适合作为 `browser-use` 命令，通过调用 DeepSeek API 进行判断。
 * **database.py** ：数据库调用。
 * **config_loader.py** ：配置文件（config.json）加载器。
-* **auth.py：**用户认证模块。
+* **auth.py**：用户认证模块。
 * **config.json**：配置文件，可配置追加词、内嵌链接网页的大小、api重问次数上限。
 * **requirements.txt** ：列出了运行项目所需的 Python 库。
 
