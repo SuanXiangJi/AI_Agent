@@ -1,0 +1,353 @@
+ SystemMessage 
+You are an AI agent designed to automate browser tasks. Your goal is to accomplish the ultimate task following the rules.
+
+# Input Format
+Task
+Previous steps
+Current URL
+Open Tabs
+Interactive Elements
+[index]<type>text</type>
+- index: Numeric identifier for interaction
+- type: HTML element type (button, input, etc.)
+- text: Element description
+Example:
+[33]<button>Submit Form</button>
+
+- Only elements with numeric indexes in [] are interactive
+- elements without [] provide only context
+
+# Response Rules
+1. RESPONSE FORMAT: You must ALWAYS respond with valid JSON in this exact format:
+{"current_state": {"evaluation_previous_goal": "Success|Failed|Unknown - Analyze the current elements and the image to check if the previous goals/actions are successful like intended by the task. Mention if something unexpected happened. Shortly state why/why not",
+"memory": "Description of what has been done and what you need to remember. Be very specific. Count here ALWAYS how many times you have done something and how many remain. E.g. 0 out of 10 websites analyzed. Continue with abc and xyz",
+"next_goal": "What needs to be done with the next immediate action"},
+"action":[{"one_action_name": {// action-specific parameter}}, // ... more actions in sequence]}
+
+2. ACTIONS: You can specify multiple actions in the list to be executed in sequence. But always specify only one action name per item. Use maximum {max_actions} actions per sequence.
+Common action sequences:
+- Form filling: [{"input_text": {"index": 1, "text": "username"}}, {"input_text": {"index": 2, "text": "password"}}, {"click_element": {"index": 3}}]
+- Navigation and extraction: [{"go_to_url": {"url": "https://example.com"}}, {"extract_content": {"goal": "extract the names"}}]
+- Actions are executed in the given order
+- If the page changes after an action, the sequence is interrupted and you get the new state.
+- Only provide the action sequence until an action which changes the page state significantly.
+- Try to be efficient, e.g. fill forms at once, or chain actions where nothing changes on the page
+- only use multiple actions if it makes sense.
+
+3. ELEMENT INTERACTION:
+- Only use indexes of the interactive elements
+- Elements marked with "[]Non-interactive text" are non-interactive
+
+4. NAVIGATION & ERROR HANDLING:
+- If no suitable elements exist, use other functions to complete the task
+- If stuck, try alternative approaches - like going back to a previous page, new search, new tab etc.
+- Handle popups/cookies by accepting or closing them
+- Use scroll to find elements you are looking for
+- If you want to research something, open a new tab instead of using the current tab
+- If captcha pops up, try to solve it - else try a different approach
+- If the page is not fully loaded, use wait action
+
+5. TASK COMPLETION:
+- Use the done action as the last action as soon as the ultimate task is complete
+- Dont use "done" before you are done with everything the user asked you, except you reach the last step of max_steps. 
+- If you reach your last step, use the done action even if the task is not fully finished. Provide all the information you have gathered so far. If the ultimate task is completly finished set success to true. If not everything the user asked for is completed set success in done to false!
+- If you have to do something repeatedly for example the task says for "each", or "for all", or "x times", count always inside "memory" how many times you have done it and how many remain. Don't stop until you have completed like the task asked you. Only call done after the last step.
+- Don't hallucinate actions
+- Make sure you include everything you found out for the ultimate task in the done text parameter. Do not just say you are done, but include the requested information of the task. 
+
+6. VISUAL CONTEXT:
+- When an image is provided, use it to understand the page layout
+- Bounding boxes with labels on their top right corner correspond to element indexes
+
+7. Form filling:
+- If you fill an input field and your action sequence is interrupted, most often something changed e.g. suggestions popped up under the field.
+
+8. Long tasks:
+- Keep track of the status and subresults in the memory. 
+
+9. Extraction:
+- If your task is to find information - call extract_content on the specific pages to get and store the information.
+Your responses must be always JSON with the specified format.
+
+ HumanMessage 
+Your ultimate task is: """要查询**江苏南通**明天的天气，您可以按照以下步骤操作：  
+
+### **网页操作指南（使用Google搜索）**  
+1. **打开浏览器**（如Chrome、Edge等）。  
+2. **访问Google搜索**（网址：[www.google.com](https://www.google.com)）。  
+3. **在搜索框输入**：  
+   ```  
+   江苏南通 明天天气  
+   ```  
+4. **按回车键搜索**，Google会直接""". If you achieved your ultimate task, stop everything and use the done action in the next step to complete the task. If not, continue as usual.
+
+ HumanMessage 
+Example output:
+
+ AIMessage 
+
+
+ ToolMessage 
+Browser started
+
+ HumanMessage 
+[Your task history memory starts here]
+
+ AIMessage 
+
+
+ ToolMessage 
+
+
+ AIMessage 
+
+
+ ToolMessage 
+
+
+ AIMessage 
+
+
+ ToolMessage 
+
+
+ HumanMessage 
+Action result: ⌨️  Input 江苏南通 明天天气 into index 4
+
+ HumanMessage 
+Action result: Something new appeared after action 1 / 2
+
+ AIMessage 
+
+
+ ToolMessage 
+
+
+ HumanMessage 
+Action result: 🖱️  Clicked button with index 8:
+
+ HumanMessage 
+[Task history memory ends]
+[Current state starts here]
+The following is one-time information - if you need to remember it write it to memory:
+Current url: https://www.google.com/search?q=%E6%B1%9F%E8%8B%8F%E5%8D%97%E9%80%9A+%E6%98%8E%E5%A4%A9%E5%A4%A9%E6%B0%94&sca_esv=7ffbc6d94dac2745&source=hp&ei=Uc4YaKehMLSNvr0Po8eV6Qw&iflsig=ACkRmUkAAAAAaBjcYc6A4llNI3kyXlgNoZ_VkvSCeVLM&ved=0ahUKEwjnjb6RyIyNAxW0hq8BHaNjJc0Q4dUDCBA&oq=%E6%B1%9F%E8%8B%8F%E5%8D%97%E9%80%9A+%E6%98%8E%E5%A4%A9%E5%A4%A9%E6%B0%94&gs_lp=Egdnd3Mtd2l6IhnmsZ_oi4_ljZfpgJog5piO5aSp5aSp5rCUSIJmUABYAHAAeACQAQCYAQCgAQCqAQC4AQzIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwA&sclient=gws-wiz&sei=bs4YaNSQNsbT2roPopDn6As
+Available tabs:
+[TabInfo(page_id=0, url='https://www.google.com/search?q=%E6%B1%9F%E8%8B%8F%E5%8D%97%E9%80%9A+%E6%98%8E%E5%A4%A9%E5%A4%A9%E6%B0%94&sca_esv=7ffbc6d94dac2745&source=hp&ei=Uc4YaKehMLSNvr0Po8eV6Qw&iflsig=ACkRmUkAAAAAaBjcYc6A4llNI3kyXlgNoZ_VkvSCeVLM&ved=0ahUKEwjnjb6RyIyNAxW0hq8BHaNjJc0Q4dUDCBA&oq=%E6%B1%9F%E8%8B%8F%E5%8D%97%E9%80%9A+%E6%98%8E%E5%A4%A9%E5%A4%A9%E6%B0%94&gs_lp=Egdnd3Mtd2l6IhnmsZ_oi4_ljZfpgJog5piO5aSp5aSp5rCUSIJmUABYAHAAeACQAQCYAQCgAQCqAQC4AQzIAQD4AQGYAgCgAgCYAwCSBwCgBwCyBwC4BwA&sclient=gws-wiz&sei=bs4YaNSQNsbT2roPopDn6As', title='江苏南通 明天天气 - Google 搜索')]
+Interactive elements from top layer of the current page inside the viewport:
+[Start of page]
+无障碍功能链接
+跳到主要内容
+无障碍功能帮助
+无障碍功能反馈
+[0]<a Google 首页/>
+[1]<textarea 搜索;;false;q;combobox>江苏南通 明天天气/>
+[2]<div button;清除/>
+[3]<div 按语音搜索;button/>
+[4]<div button;按图搜索/>
+[5]<button 搜索;submit/>
+[6]<div 设置;button>快捷设置/>
+[7]<a button;false;Google 应用/>
+[8]<a 登录/>
+过滤条件和主题
+[9]<a link>全部/>
+[10]<a link>新闻/>
+[11]<a link>图片/>
+[12]<a link>购物/>
+[13]<a link>视频/>
+[14]<a link>短视频/>
+[15]<a link>地图/>
+[16]<div button;false>更多/>
+[17]<div button;false>工具/>
+搜索结果 ·
+中国江苏省南通市
+∙
+[18]<a button>选择区域/>
+[19]<a button;位置信息使用方式/>
+搜索结果
+天气情况搜索结果
+[20]<img />
+26
+[21]<span button;°Celsius>°C/>
+[22]<a button>°F/>
+降水概率：
+10%
+湿度：
+48%
+风速：
+26 公里/时
+天气
+多云
+[23]<div button>温度/>
+[24]<div button>降水概率/>
+[25]<div button>风力/>
+下午11时
+上午2时
+上午5时
+上午8时
+上午11时
+下午2时
+下午5时
+下午8时
+下午11时
+上午2时
+上午5时
+上午8时
+上午11时
+下午2时
+下午5时
+下午8时
+下午11时
+上午2时
+上午5时
+上午8时
+上午11时
+下午2时
+[26]<div button>周一
+19
+67
+°
+17
+62
+°/>
+[27]<img />
+[28]<div button>周二
+26
+78
+°
+14
+57
+°/>
+[29]<img />
+[30]<div button>周三
+26
+78
+°
+16
+60
+°/>
+[31]<img />
+[32]<div button>周四
+23
+74
+°
+19
+66
+°/>
+[33]<img />
+[34]<div button>周五
+25
+77
+°
+18
+64
+°/>
+[35]<img />
+[36]<div button>周六
+23
+74
+°
+17
+62
+°/>
+[37]<img />
+[38]<div button>周日
+25
+77
+°
+18
+65
+°/>
+[39]<img />
+[40]<div button>周一
+27
+81
+°
+19
+67
+°/>
+[41]<img />
+[42]<a Google 天气/>
+•
+[43]<div button>反馈/>
+[44]<a 预报- 南通
+天气网
+https://www.weather.com.cn
+› weather/>
+[45]<img />
+[46]<div button;关于这条结果的详细信息/>
+5日（今天）. 晴. 13℃. <3级 · 6日（
+明天
+）. 阴转多云. 24℃/11℃. 3-4级转<3级 · 7日（后天）. 多云. 24℃/12℃. <3级转3-4级 · 8日（周四）. 中雨转大雨. 23℃/16℃. 3-4级 · 9日（周五）.
+[47]<a 8-15天/>
+[48]<a 40天/>
+[49]<a 今天/>
+[50]<a 5日（明天）/>
+[51]<a 预报- 南通
+天气网
+https://www.weather.com.cn
+› .../>
+[52]<img />
+[53]<div button;关于这条结果的详细信息/>
+周六（10日） 阴转晴 29℃/17℃ 东南风转西南风 <3级; 周日（11日） 晴 31℃/18℃ 南风 3-4级转<3级; 周一（12日） 晴转多云 31℃/16℃ 东南风 3-4级; 周二（13日） 阴 28℃/17℃ 东南 ...
+[54]<a 南通 - 中国气象局-天气预报-城市预报
+中国气象局-天气预报
+https://weather.cma.cn
+› web › weather/>
+[55]<img />
+[56]<div button;关于这条结果的详细信息/>
+星期一 05/05. 小雨. 东南风 ; 星期二 05/06. 阴. 西北风 ; 星期三 05/07. 多云. 东风 ; 星期四 05/08. 小雨. 东南风 ; 星期五 05/09. 阴. 东北风.
+[57]<a 南通, 江蘇省, 中國三日天氣預報
+AccuWeather
+https://www.accuweather.com
+› nantong/>
+[58]<img />
+·
+[59]<a 转为简体网页/>
+[60]<div button;关于这条结果的详细信息/>
+每日預報 ;
+今天. 5/5. 70° 64°. 更涼爽. 大部晴朗
+; 周二. 5/6. 79° 57°. 變暖. 局部多雲 ; 周三. 5/7. 73° 59°. 大致多雲. 局部多雲.
+[61]<a 【南通天气预报】南通天气预报7天,10天,15天_全国天气网
+360搜索
+https://tianqi.so.com
+› weather/>
+[62]<img />
+[63]<div button;关于这条结果的详细信息/>
+全国
+天气
+网 ; 今天(05-05). 小雨转多云. 15/24℃ ;
+明天
+(05-06). 阴转多云. 11/25℃ ; 周三(05-07). 多云转阴. 14/25℃ ; 周四(05-08). 小雨. 17/24℃ ; 周五(05-09). 多云. 14/21℃.
+[64]<a 南通市天气预报
+墨迹天气
+https://tianqi.moji.com
+› china › jiangsu › nantong/>
+[65]<img />
+[66]<div button;关于这条结果的详细信息/>
+南通
+市今天实况：16度阵雨，湿度：92%，东南风：3级。白天：24度,小雨。 夜间：多云，15度，温度适中，墨迹
+天气
+建议您穿着春秋季节的过渡装扮。
+[67]<a 360搜索
+https://tianqi.so.com
+› weather/>
+[68]<img />
+[69]<div button;关于这条结果的详细信息/>
+... 1594 pixels below - scroll or extract content to see more ...
+Current step: 5/100Current date and time: 2025-05-05 22:42
+
+ RESPONSE
+{
+  "current_state": {
+    "evaluation_previous_goal": "Success - Successfully submitted the search query for Jiangsu Nantong tomorrow's weather.",
+    "memory": "Step 1: Navigated to Google search page. Step 2: Input the search query for Jiangsu Nantong tomorrow's weather. Step 3: Submitted the search query. Step 4: Extracted the weather information.",
+    "next_goal": "Extract the weather information for Jiangsu Nantong tomorrow."
+  },
+  "action": [
+    {
+      "extract_content": {
+        "goal": "Extract the weather forecast for Jiangsu Nantong tomorrow."
+      }
+    }
+  ]
+}
