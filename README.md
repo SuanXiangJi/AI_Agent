@@ -46,6 +46,7 @@ Python 3.9 及以上版本
 1、**克隆项目**
 
 ```bash
+git clone https://github.com/SuanXiangJi/AI_Agent
 cd AI_Agent
 ```
 
