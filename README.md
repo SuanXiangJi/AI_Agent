@@ -49,7 +49,7 @@ Python 3.9 及以上版本
 cd AI_Agent
 ```
 
-2、 **安装依赖库 **
+2、 **安装依赖库**
 
 ```bash
 pip install -r requirements.txt
